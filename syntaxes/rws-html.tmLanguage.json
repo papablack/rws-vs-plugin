@@ -1,0 +1,29 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "RWS HTML Template",
+	"patterns": [	
+		{
+			"begin": "\\$\\{",
+			"end": "\\}",
+			"name": "meta.embedded.block.js",
+			"patterns": [
+				{
+					"include": "source.js"
+				}
+			]
+		},
+		{
+			"include": "#html"
+		}
+    ],
+	"repository": {
+		"html": {
+		  "patterns": [
+			{
+			  "include": "text.html.noattr"
+			}
+		  ]
+		}
+	},
+	"scopeName": "source.rws-html"
+}
