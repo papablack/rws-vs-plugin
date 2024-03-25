@@ -2,7 +2,7 @@
   "name": "rws-html-templates",
   "displayName": "RWS HTML templates",
   "description": "Code hinting for RWS Framework HTML templates (webpack loaded Microsoft Fast Elements from .html files)",
-  "author": "Papa Black",
+  "author": "papablack",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.86.2"
@@ -36,6 +36,11 @@
     "grammars": [
       {
         "language": "rws-html",
+        "scopeName": "source.rws.js",
+        "path": "./syntaxes/mod-js.tmLanguage.json"
+      },
+      {
+        "language": "rws-html",
         "scopeName": "text.html.noattr",
         "path": "./syntaxes/mod-html.tmLanguage.json"
       },
@@ -63,7 +68,7 @@
             "messages",
             "verbose"
           ],
-          "default": "verbose",
+          "default": "messages",
           "description": "Traces the communication between VS Code and the language server."
         }
       }
@@ -95,5 +100,9 @@
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.11"
   },
-  "activationEvents": []
+  "activationEvents": [],
+  "repository": {
+    "url": "git@github.com:papablack/rws-vs-plugin.git",
+    "type": "github"
+  }
 }

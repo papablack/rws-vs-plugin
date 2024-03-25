@@ -18,7 +18,10 @@
 			]
 		}
 	},
-	"patterns": [
+	"patterns": [	
+		{
+			"include": "#jsTemplate"
+		},
 		{
 			"include": "#xml-processing"
 		},
@@ -41,7 +44,21 @@
 			"include": "#entities"
 		}
 	],
-	"repository": {
+	"repository": {		
+		"jsTemplate": {
+			"patterns": [
+				{
+					"begin": "\\$\\{",
+					"end": "\\}",
+					"name": "meta.embedded.block.js",
+					"patterns": [			
+						{
+							"include": "source.rws.js"
+						}						
+					]
+				}
+			]
+		},
 		"attribute": {
 			"patterns": [
 				{
@@ -112,7 +129,7 @@
 												}
 											},
 											"name": "string.quoted.double.html",
-											"patterns": [												
+											"patterns": [
 												{
 													"include": "#entities"
 												}
@@ -402,7 +419,7 @@
 								}
 							},
 							"name": "string.quoted.double.html",
-							"patterns": [								
+							"patterns": [
 								{
 									"include": "#entities"
 								}
@@ -530,17 +547,10 @@
 			]
 		},
 		"entities": {
-			"patterns": [	
+			"patterns": [
 				{
-					"begin": "\\$\\{",
-					"end": "\\}",
-					"name": "meta.embedded.block.js",
-					"patterns": [
-						{
-							"include": "source.js"
-						}
-					]
-				},			
+					"include": "#jsTemplate"
+				},
 				{
 					"captures": {
 						"1": {
@@ -647,7 +657,7 @@
 					]
 				}
 			],
-			"repository": {			
+			"repository": {
 				"attribute": {
 					"patterns": [
 						{

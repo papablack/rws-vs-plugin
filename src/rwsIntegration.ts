@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import {ArgumentsExtracted, extractRWSViewArguments, getTsApp} from './rwsDecoratorExtractor';
 import path from 'path';
+import { RWSServerLogger } from './serverMsgs';
 
 const __jsTemplateRegex: RegExp = /\$\{([^}]+)(?:\}|\s|$)/g;
 
@@ -24,13 +25,13 @@ function getComponentClass(filePath: string): ArgumentsExtracted
 
 export interface ParsedTemplate {
     toDot: string,    
-    classMetadata: ArgumentsExtracted | null
+    classMetadata: ArgumentsExtracted | null,
+    lastPreDotChar: string
 }
 
 export function parseJS(jsCode: string)
 {
-    const packageDir = path.resolve(path.dirname(module.id));
-    // const tsConfigPath = path.resolve(`${packageDir}/tsconfig.json`);
+    //const packageDir = path.resolve(path.dirname(module.id));    
     
     const sourceFile = ts.createSourceFile(
         "html_js_template.js", 
@@ -38,23 +39,19 @@ export function parseJS(jsCode: string)
         ts.ScriptTarget.ESNext,
         true
     );
-    
-    // Function to visit nodes in the AST
-    function visit(node: ts.Node) {
-        // Check if the node is a function declaration
-        if (ts.isFunctionDeclaration(node)) {
-            // Log the name of the function
+        
+    function visit(node: ts.Node) {        
+        if (ts.isFunctionDeclaration(node)) {            
             console.log("Found function:", node.name?.text || "anonymous");
         }
-    
-        // Continue visiting nodes recursively
+            
         ts.forEachChild(node, visit);
     }
 
     ts.forEachChild(sourceFile, visit);
 }
 
-export function parseHtml(html: string, currentFileDir: string): ParsedTemplate | null 
+export function parseHtml(html: string, currentFileDir: string, logger: RWSServerLogger): ParsedTemplate | null 
 {
     if(!isJsTemplate(html)){
         console.log('not detected template');
@@ -64,17 +61,22 @@ export function parseHtml(html: string, currentFileDir: string): ParsedTemplate 
     const foundTemplatePartialJs = `const jsTemplate = ${getJsTemplate(html)};`;    
 
     if(!foundTemplatePartialJs){
+        logger.warn('No component JS templates found in current code.');
         return null;
     }    
     
     const toDot = foundTemplatePartialJs.split('.').pop();      
-    const comp = getComponentClass(currentFileDir + '/component.ts');
+    const comp = getComponentClass(currentFileDir + '/component.ts');    
 
     if(!comp){
+        logger.warn('No component TS file was found next to HTML file.');
         return null;
     }
+    
+    const preDotText: any = foundTemplatePartialJs.split('.')[0];    
 
     return {
+        lastPreDotChar: preDotText[preDotText.length - 1], 
         toDot: toDot as string,        
         classMetadata: comp ? comp : null
     };

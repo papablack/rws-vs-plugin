@@ -27,11 +27,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(require("vscode"));
 const path_1 = __importDefault(require("path"));
-// import runServer from './server';
 const vscode_1 = require("vscode");
 const node_1 = require("vscode-languageclient/node");
 let client;
@@ -41,7 +38,6 @@ class ExtendedLanguageClient extends node_1.LanguageClient {
         super(id, name, serverOptions, clientOptions);
         this.channel = outputChannel;
     }
-    // Correct implementation of the getter for outputChannel
     get outputChannel() {
         return this.channel;
     }
@@ -51,12 +47,8 @@ class ExtendedLanguageClient extends node_1.LanguageClient {
         }
     }
 }
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 function activate(context) {
     const serverModule = context.asAbsolutePath(path_1.default.join('out', 'server.js'));
-    // If the extension is launched in debug mode then the debug server options are used
-    // Otherwise the run options are used
     const serverOptions = {
         run: { module: serverModule, transport: node_1.TransportKind.ipc },
         debug: {
@@ -64,27 +56,28 @@ function activate(context) {
             transport: node_1.TransportKind.ipc,
         }
     };
-    // Options to control the language client
     const clientOptions = {
-        // Register the server for plain text documents
         documentSelector: [{ scheme: 'file', language: 'rws-html' }],
         synchronize: {
-            // Notify the server about file changes to '.clientrc files contained in the workspace
             fileEvents: vscode_1.workspace.createFileSystemWatcher('**/.html')
         }
     };
     const outputChannel = vscode.window.createOutputChannel("RWS Logs");
     outputChannel.show();
-    // Create the language client and start the client.
     client = new ExtendedLanguageClient('rwsLanguageServer', 'RWS HTML Language Server', serverOptions, clientOptions, outputChannel);
-    outputChannel.appendLine("This is a log message from client.");
-    // Start the client. This will also launch the server
     client.start();
-    vscode.window.showInformationMessage('Hello World from testvs!');
-    console.log('Congratulations, your extension "testvs" is now active!', serverOptions, clientOptions);
+    client.onNotification('rwsLanguageServer/info', (message) => {
+        vscode.window.showInformationMessage(message);
+    });
+    client.onNotification('rwsLanguageServer/warn', (message) => {
+        vscode.window.showWarningMessage(message);
+    });
+    client.onNotification('rwsLanguageServer/error', (message) => {
+        vscode.window.showErrorMessage(message);
+    });
+    vscode.window.showInformationMessage('RWS Templates activated!');
 }
 exports.activate = activate;
-// This method is called when your extension is deactivated
 function deactivate() { }
 exports.deactivate = deactivate;
 //# sourceMappingURL=extension.js.map

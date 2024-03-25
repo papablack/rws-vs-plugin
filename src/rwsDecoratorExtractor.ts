@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
 import fs from 'fs';
 import path from 'path';
-import JSON5 from 'json5';
 import { CompletionItemKind } from 'vscode-languageserver';
 
 export type TypedResponse = {
@@ -15,7 +14,7 @@ export type TypedResponse = {
 
 
 export interface ArgumentsExtracted {
-    decoratorArgs: {
+    decoratorArgs?: {
         className: string | null;
         tagName: string | null;
         options: any | null;
@@ -165,7 +164,7 @@ function getPropArgs(prop: any, sourceFile: any)
 }
 
 function isFunc(prop: any){
-    return prop.kind === ts.SyntaxKind.FunctionDeclaration || prop.kind === ts.SyntaxKind.MethodDeclaration
+    return prop.kind === ts.SyntaxKind.FunctionDeclaration || prop.kind === ts.SyntaxKind.MethodDeclaration;
 }
 
 function findClassLine(sourceFile: ts.SourceFile, classDeclaration: any): number | undefined {
